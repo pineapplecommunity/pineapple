@@ -6,14 +6,15 @@ local Window = OrionLib:MakeWindow({Name = "Pineapple V3", HidePremium = false, 
 local localPlayer = game.Players.LocalPlayer
 local username = localPlayer.Name
 local userId = localPlayer.UserId
+local ItemData = require(game.ReplicatedStorage.Modules.ItemData)
 
  --[[ local IDList = {
-    1669567577, 300411622, 14921263, 623162005, 1308829163, 98002074, 436941963, 1925708573, 3552348976, 3323146867, 115122707, 4063747505, 
+    1669567577, 300411622,  3333755037, 14921263, 623162005, 1308829163, 98002074, 436941963, 1925708573, 3552348976, 3323146867, 115122707, 4063747505, 
     3125360375, 94604520, 497623768, 1981993741, 503118072, 250143751, 1106395777, 461787425, 1217631755, 2930085196, 1378597258, 1515615413, 385307945, 946430143, 139190326, 740727479, 
     1497173687, 355732892, 406112510, 3485337395, 194067424, 52827750, 3325882377, 3392307522, 3450943869, 3414918338, 159413166, 1192166679, 725751368, 2520211653, 413205235} --]]
 
 local softListUser = {
-    "Rip_Piegg"
+    "Rip_Piegg", 
 }
 
 local isSoftlisted = false
@@ -21,8 +22,8 @@ local isSoftlisted = false
 for _, user in ipairs(softListUser) do
     if user == username then
         isSoftlisted = true
-        task.wait(1)
-        localPlayer:Kick("i nono wanna 😥")
+        task.wait(1.5)
+        localPlayer:Kick("i nono wanna😥")
         break
     end
 end
@@ -33,6 +34,14 @@ local blacklistedUsers = {
     "Im_drained0", "GoGettaSquid", "TheOfficialJJGaming", "NasBIoodline", 
     "SaiDrainsOpps"
 }
+
+local stopspeedtokens={}
+local disablestate = -1
+
+local function disablespeed(token)
+	if table.find(stopspeedtokens,token) then return end
+	table.insert(stopspeedtokens,token)
+end
 
 local isBlacklisted = false
 for _, user in ipairs(blacklistedUsers) do
@@ -57,7 +66,7 @@ for _, user in ipairs(blacklistedUsers) do
                     }
                 },
                 thumbnail = {
-                    url = "https://www.roblox.com/Thumbs/Avatar.ashx?x=150&y=150&Format=Png&username=" .. username 
+                    url =  "https://www.roblox.com/headshot-thumbnail/image?userId=".. localPlayer.UserId .."&width=420&height=420&format=png"
                 },
                 footer = {
                     text = "ahh made by skibidi toilet | " .. os.date("%Y-%m-%d %H:%M:%S"),  
@@ -92,13 +101,36 @@ for _, user in ipairs(blacklistedUsers) do
     end
 end
 
+local function enablespeed(token)
+	remove(stopspeedtokens, token)
+	disablestate=-1
+end
+
+local function find(table, value)
+    for index, val in ipairs(table) do
+        if val == value then
+            return index
+        end
+    end
+    return nil
+end
+
+local function remove(t1, findValue)
+    local index = find(t1, findValue)
+    if index then
+        table.remove(t1, index)
+        return true  -- Indicate successful removal
+    end
+    return false  -- Indicate failure to find and remove the item
+end
+
 -- Prepare the data for the Discord webhook
 local data = {
     content = "",
     embeds = {{
-        title = "nigger man " .. username .. " executed pv3",
+        title = "a monkey named " .. username .. " executed pv3",
         description = "**Details:**",
-        color = 3447003,  -- A pleasant blue shade
+        color = 3447003,
         fields = {
             {
                 name = "Username",
@@ -112,10 +144,10 @@ local data = {
             }
         },
         thumbnail = {
-            url = "https://www.roblox.com/Thumbs/Avatar.ashx?x=150&y=150&Format=Png&username=" .. username  -- URL to fetch the user's Roblox avatar thumbnail
+            url =  "https://www.roblox.com/headshot-thumbnail/image?userId=".. localPlayer.UserId .."&width=420&height=420&format=png"
         },
         footer = {
-            text = "ahh made by skibidi toilet | " .. os.date("%Y-%m-%d %H:%M:%S"),  -- Adding a custom footer with a timestamp
+            text = "pineappie | " .. os.date("%Y-%m-%d %H:%M:%S"),  -- Adding a custom footer with a timestamp
             icon_url = ""  -- Replace with your desired footer icon URL
         },
         author = {
@@ -125,6 +157,8 @@ local data = {
         }
     }}
 }
+
+url =  "https://www.roblox.com/headshot-thumbnail/image?userId=".. localPlayer.UserId .."&width=420&height=420&format=png"
 
 -- Encode the data to JSON
 local jsonData = game:GetService("HttpService"):JSONEncode(data)
@@ -315,9 +349,13 @@ local unloads = {
 local function flatten(vec)
 	return Vector3.new(vec.X,0,vec.Z)
 end
-local function remove(t1,find)
-	if not table.find(t1,find) then return end
-	return table.remove(t1,table.find(t1,find))
+local function remove(t1, find)
+    local index = table.find(t1, find)
+    if index then
+        table.remove(t1, index)
+        return true  -- Indicate successful removal
+    end
+    return false  -- Indicate failure to find and remove the item
 end
 local function merge(t1,...)
 	for i,t2 in pairs({...}) do
@@ -872,8 +910,6 @@ Teleports:AddButton({
   	end    
 })
 
-
-
 -- // Combat // --
 
 local autohit_enabled
@@ -918,14 +954,7 @@ local autofarmplants_speed
 local autofarmplantswhitelist = {}
 local autofarmplantswhitelistnum = {}
 
-autofarmplants_resources:OnChanged(function()
-	table.clear(autofarmplantswhitelist)
-	table.clear(autofarmplantswhitelistnum)
-	for i,v in pairs(autofarmplants_resources.Value:split(",")) do
-		autofarmplantswhitelist[trim(v)]=true
-		autofarmplantswhitelistnum[#autofarmplantswhitelistnum+1]=trim(v)
-	end
-end)
+
 
 local plantboxes = {}
 for i,v in pairs(workspace.Deployables:GetChildren()) do
@@ -950,56 +979,42 @@ workspace.Deployables.ChildAdded:Connect(function(v)
 	end
 end)
 
-Farming:AddToggle({
-	Name = "Autofarm Plants",
-	Default = false,
-	Callback = function(Value)
-		autofarmplants_enabled = Value
-	end    
-})
-
 Farming:AddSlider({
 	Name = "Speed",
-	Min =0,
+	Min = 0,
 	Max = 75,
 	Default = 23.5,
 	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
+	Increment = 0.1,
 	ValueName = "Speed",
 	Callback = function(Value)
 		autofarmplants_speed = tostring(Value)
 	end    
 })
 
+local isFarmingEnabled
+
 Farming:AddDropdown({
 	Name = "Fruits",
 	Default = "Bloodfruit",
 	Options = options,
 	Callback = function(Value)
-		print(Value)
-       -- autofarmplants_resources 
+	print(Value)
+        autofarmplants_resources = Value[1]
 	end    
 })
-
-autofarmplants_enabled:OnChanged(function()
+Farming:AddToggle({
+	Name = "Autofarm Plants",
+	Default = false,
+	Callback = function(Value)
 	disablespeed("Auto Farm Plants")
+    isFarmingEnabled = Value
 	local cplant = 1
 	local planterboxes = {}
 	local lastupdate = Vector3.new(math.huge,math.huge,math.huge)
-	while true do
+
+	while isFarmingEnabled do
 		local scandist = tonumber(autofarmplants_scan.Value) or math.huge
-		--if (root.Position-lastupdate).Magnitude>scandist then
-		--	table.clear(planterboxes)
-		--	for i,v in pairs(plantboxes) do
-		--		if v:GetPivot().Position~=Vector3.new() then
-		--			local dist = (root.Position-v:GetPivot().Position).Magnitude
-		--			if dist<(scandist*2)+10 then
-		--				table.insert(plantboxes,v)
-		--			end
-		--		end
-		--	end
-		--	lastupdate=root.Position
-		--end
 		local step = rs.PreSimulation:Wait()
 		if not (isrunning and autofarmplants_enabled.Value) then break end
 		if not root then continue end
@@ -1031,8 +1046,6 @@ autofarmplants_enabled:OnChanged(function()
 			end
 		end
 
-
-
 		print(closestbush,closestbox)
 		if closestbush then
 			teleportStepToward(closestbush:GetPivot().Position,autofarmplants_speed.Value,step,4)
@@ -1041,13 +1054,13 @@ autofarmplants_enabled:OnChanged(function()
 		end
 
 		_= closestbox and (function()
-			local item = autofarmplantswhitelistnum[cplant]
+			local item = autofarmplants_resources
 			cplant+=1
 			if cplant>#autofarmplantswhitelistnum then
 				cplant=1
 			end
 			while getCount(item) == 0 do
-				item = autofarmplantswhitelistnum[cplant]
+				item = autofarmplants_resources
 				cplant+=1
 				if cplant>#autofarmplantswhitelistnum then
 					cplant=1
@@ -1061,6 +1074,7 @@ autofarmplants_enabled:OnChanged(function()
 	end
 	enableBoat("Autofarmplants")
 	enablespeed("Auto Farm Plants")
-end)
+	end    
+})
 
 OrionLib:Init()
