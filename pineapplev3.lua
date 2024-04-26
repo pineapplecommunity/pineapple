@@ -65,11 +65,9 @@ for _, user in ipairs(blacklistedUsers) do
                         inline = true
                     }
                 },
-                thumbnail = {
-                    url =  "https://www.roblox.com/headshot-thumbnail/image?userId=".. localPlayer.UserId .."&width=420&height=420&format=png"
-                },
+                
                 footer = {
-                    text = "ahh made by skibidi toilet | " .. os.date("%Y-%m-%d %H:%M:%S"),  
+                    text = "pineappie | " .. os.date("%Y-%m-%d %H:%M:%S"),  
                     icon_url = "" 
                 },
                 author = {
@@ -143,9 +141,7 @@ local data = {
                 inline = true
             }
         },
-        thumbnail = {
-            url =  "https://www.roblox.com/headshot-thumbnail/image?userId=".. localPlayer.UserId .."&width=420&height=420&format=png"
-        },
+      
         footer = {
             text = "pineappie | " .. os.date("%Y-%m-%d %H:%M:%S"),  -- Adding a custom footer with a timestamp
             icon_url = ""  -- Replace with your desired footer icon URL
